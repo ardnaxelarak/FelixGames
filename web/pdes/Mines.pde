@@ -1,4 +1,4 @@
-/* @pjs font="Noticia.ttf"; */
+/* @pjs font="include/Noticia.ttf"; */
 
 boolean[][] checked;
 boolean[][] mine, flag;

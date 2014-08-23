@@ -1,4 +1,4 @@
-/* @pjs font="Noticia.ttf"; */
+/* @pjs font="include/Noticia.ttf"; */
 
 /**
  * Left click to place a block<br>
@@ -588,7 +588,7 @@ void endGame()
     ttr = 50;
     gameend = true;
 
-    writelog("scores/" + gamename + "-scores", name, lines, score);
+    log_score(gamename, name, lines, score);
     try
     {
         scores = loadStrings(gamename + ".best");

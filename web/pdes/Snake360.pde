@@ -1,4 +1,4 @@
-/* @pjs font="Noticia.ttf"; */
+/* @pjs font="include/Noticia.ttf"; */
 
 /**
  * Hold left or right to rotate<br>
@@ -167,7 +167,7 @@ void endGame()
 {
     gameend = true;
     if (score > 0)
-        writelog("scores/" + gamename + "-scores", name, score);
+        log_score(gamename, name, score);
 }
 
 void placefood()

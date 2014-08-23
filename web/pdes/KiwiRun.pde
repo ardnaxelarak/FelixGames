@@ -1,4 +1,4 @@
-/* @pjs font="Noticia.ttf"; */
+/* @pjs font="include/Noticia.ttf"; */
 
 /**
  * <p>Oh no!  You were minding your own business trying to catch a few worms for lunch,<br>
@@ -315,7 +315,7 @@ void endGame()
     ttr = 50;
     gameend = true;
 
-    writelog("scores/" + gamename + "-scores", name, score, level);
+    log_score(gamename, name, score, level);
     try
     {
         scores = loadStrings(gamename + ".best");

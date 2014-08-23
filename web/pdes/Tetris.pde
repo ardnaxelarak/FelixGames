@@ -1,4 +1,4 @@
-/* @pjs font="Noticia.ttf"; */
+/* @pjs font="include/Noticia.ttf"; */
 
 /**
  * J/L or LEFT/RIGHT to move left/right<br>
@@ -724,7 +724,7 @@ boolean tryRotateLeft()
 void endGame()
 {
     gameend = true;
-    writelog("scores/" + gamename + "-scores", name, lines, score);
+    log_score(gamename, name, lines, score);
 //    String[] scores;
 //    try
 //    {

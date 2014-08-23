@@ -1,4 +1,4 @@
-/* @pjs font="Noticia.ttf"; */
+/* @pjs font="include/Noticia.ttf"; */
 
 /**
  * Click to place your ball, and drag to lauch<br>
@@ -232,7 +232,7 @@ void endGame()
     gameend = true;
 
     if (score > 0)
-        writelog("scores/" + gamename + "-scores", name, score);
+        log_score(gamename, name, score);
 }
 
 void keyPressed()

@@ -1,4 +1,4 @@
-/* @pjs font="Noticia.ttf"; */
+/* @pjs font="include/Noticia.ttf"; */
 
 /**
  * Click somewhere to place your ball initially<br>
@@ -263,7 +263,7 @@ void endGame()
     ttr = 50;
     gameend = true;
 
-    writelog("scores/" + gamename + "-scores", name, score, level);
+    log_score(gamename, name, score, level);
     try
     {
         scores = loadStrings(gamename + ".best");

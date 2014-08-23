@@ -1,4 +1,4 @@
-/* @pjs font="Noticia.ttf"; */
+/* @pjs font="include/Noticia.ttf"; */
 
 /**
  * Use numpad or letters around S to move<br>
@@ -206,7 +206,7 @@ void endGame()
     ttr = 50;
     gameend = true;
 
-    writelog("scores/" + gamename + "-scores", name, score);
+    log_score(gamename, name, score);
     try
     {
         scores = loadStrings(gamename + ".best");
