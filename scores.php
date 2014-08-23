@@ -145,22 +145,22 @@ else
 	<body>
 		<h1><?php echo $curgame->display; ?></h1>
 		<p class="center">Display:
-			<a href="Scores.php?game=<?php echo $game; ?>&display=all<?php echo $sortlink; ?>">All</a>, 
-			<a href="Scores.php?game=<?php echo $game; ?>&display=topten<?php echo $sortlink; ?>">Top 10</a>, 
-			<a href="Scores.php?game=<?php echo $game; ?>&display=each<?php echo $sortlink; ?>">By name</a>
+			<a href="scores.php?game=<?php echo $game; ?>&display=all<?php echo $sortlink; ?>">All</a>, 
+			<a href="scores.php?game=<?php echo $game; ?>&display=topten<?php echo $sortlink; ?>">Top 10</a>, 
+			<a href="scores.php?game=<?php echo $game; ?>&display=each<?php echo $sortlink; ?>">By name</a>
 		</p>
 		<table class="center" style="border:0px">
 			<tr>
 				<td class="left" style="border:0px; width:<?php echo $halfwidth; ?>px">
 				<?php if ($index > 0) { ?>
-					<a href="Scores.php?game=<?php echo $games[$index - 1]->scorename; ?>&display=<?php echo $display; ?>"><?php echo $games[$index - 1]->display; ?></a>
+					<a href="scores.php?game=<?php echo $games[$index - 1]->scorename; ?>&display=<?php echo $display; ?>"><?php echo $games[$index - 1]->display; ?></a>
 				<?php } else { ?>
 					&nbsp;
 				<?php } ?>
 				</td>
 				<td class="right" style="border:0px; width:<?php echo $halfwidth; ?>px">
 				<?php if ($index < count($games) - 1) { ?>
-					<a href="Scores.php?game=<?php echo $games[$index + 1]->scorename; ?>&display=<?php echo $display; ?>"><?php echo $games[$index + 1]->display; ?></a>
+					<a href="scores.php?game=<?php echo $games[$index + 1]->scorename; ?>&display=<?php echo $display; ?>"><?php echo $games[$index + 1]->display; ?></a>
 				<?php } else { ?>
 					&nbsp;
 				<?php } ?>
@@ -252,7 +252,7 @@ if ($display == 'each')
 ?>
 
 		</table>
-		<p class="center"><a href="Index.html">Back to main index</a></p>
+		<p class="center"><a href="index.html">Back to main index</a></p>
 	</body>
 </html>
 

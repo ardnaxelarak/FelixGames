@@ -183,7 +183,7 @@ if ($commentfile = fopen("comments/" . $curgame->name . "-comments", "r"))
 				</noscript>
 			</div>
 			<p id="description"><?php echo $curgame->desc; ?></p>
-			<p><a href="Index.html" title="Index">Return to main index</a>
+			<p><a href="index.html" title="Index">Return to main index</a>
 		</div>
 		<div id="commentarea">
 <?php foreach ($comments as $comment) {?>
