@@ -4,7 +4,7 @@ include_once '../include/db_connect.php';
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
-$sort = 0;
+$sort = 1;
 $items = 0;
 $labels = array();
 $games = array();
@@ -19,27 +19,15 @@ $display = "topten";
 if (isset($_GET['display']))
 	$display = $_GET['display'];
 
-$setkey = -1;
-if (isset($_GET['sort']))
-{
-	$setkey = $_GET['sort'];
-	$sort = $setkey;
-}
-
-if ($setkey >= 0)
-	$sortlink = '&sort=' . $sort;
-else
-	$sortlink = '';
-
-$stmt = $mysqli->prepare("SELECT id, display_name, col1_name, col2_name, col3_name, col4_name, col5_name FROM scorelists WHERE short_name=?");
+$stmt = $mysqli->prepare("SELECT id, display_name, default_sort, col1_name, col2_name, col3_name, col4_name, col5_name FROM scorelists WHERE short_name=?");
 $stmt->bind_param('s', $game);
 $stmt->execute();
-$stmt->bind_result($index, $display_name, $col1, $col2, $col3, $col4, $col5);
+$stmt->bind_result($index, $display_name, $sort, $col1, $col2, $col3, $col4, $col5);
 if (!($stmt->fetch()))
 {
-	$stmt = $mysqli->prepare("SELECT id, short_name, display_name, col1_name, col2_name, col3_name, col4_name, col5_name FROM scorelists JOIN (SELECT max(id) AS max_id FROM scorelists) max ON id = max_id");
+	$stmt = $mysqli->prepare("SELECT id, short_name, display_name, default_sort, col1_name, col2_name, col3_name, col4_name, col5_name FROM scorelists JOIN (SELECT max(id) AS max_id FROM scorelists) max ON id = max_id");
 	$stmt->execute();
-	$stmt->bind_result($index, $game, $display_name, $col1, $col2, $col3, $col4, $col5);
+	$stmt->bind_result($index, $game, $display_name, $sort, $col1, $col2, $col3, $col4, $col5);
 	$stmt->fetch();
 }
 $stmt->close();
@@ -48,6 +36,22 @@ $cols = array(1 => $col1, $col2, $col3, $col4, $col5);
 $cols = array_filter($cols);
 $items = count($cols);
 $halfwidth = 120 + 50 * $items;
+
+$setkey = -1;
+if (isset($_GET['sort']))
+{
+	$tempsort = $_GET['sort'];
+	if (isset($cols[$tempsort]))
+	{
+		$setkey = $_GET['sort'];
+		$sort = $setkey;
+	}
+}
+
+if ($setkey >= 0)
+	$sortlink = '&sort=' . $sort;
+else
+	$sortlink = '';
 
 ?>
 
