@@ -26,14 +26,14 @@ function createXHR()
 	return request;
 }
 
-function writelog(filename, user)
+function log_score(scorelist, user)
 {
 	var args = Array.prototype.slice.call(arguments, 2);
 	var xhr=createXHR();
-	var parameters="file=" + filename + "&name=" + user.trim()
+	var parameters="scorelist=" + scorelist + "&name=" + user.trim()
 	for (var i = 0; i < args.length; i++)
-		parameters += "&a_" + i + "=" + args[i];
-	xhr.open("POST", "logger.php", true);
+		parameters += "&col" + (i + 1) + "=" + args[i];
+	xhr.open("POST", "include/scorelogger.php", true);
 	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
 	xhr.send(parameters);
 }

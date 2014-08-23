@@ -1,49 +1,13 @@
 <?php
-class entry
-{
-	public $name, $time;
-	public $scores;
-	
-	public function __construct($pieces)
-	{
-		$this->name = ucwords(trim(str_replace("_", " ", $pieces[0])));
-		$time->time = $pieces[1];
-		$this->scores = array();
-		for ($i = 2; $i < count($pieces); $i++)
-			$this->scores[] = $pieces[$i];
-	}
-}
+include_once '../include/db_connect.php';
 
-class subgame
-{
-	public $name, $scorename, $display, $short;
-	public $key;
-	public $columns;
-	public function __construct($pieces)
-	{
-		$this->name = $pieces[0];
-		$this->scorename = $pieces[1];
-		$this->display = $pieces[2];
-		$this->short = $pieces[3];
-		$this->key = intval($pieces[4]);
-		$this->columns = array();
-		for ($i = 5; $i < count($pieces); $i++)
-			$this->columns[] = $pieces[$i];
-	}
-}
+ini_set('display_errors', 'On');
+error_reporting(E_ALL);
 
-$key = 0;
+$sort = 0;
 $items = 0;
 $labels = array();
 $games = array();
-
-function cmp($a, $b)
-{
-	global $key;
-	return $b->scores[$key] - $a->scores[$key];
-}
-
-$scores = array();
 
 $game = "";
 
@@ -55,115 +19,79 @@ $display = "topten";
 if (isset($_GET['display']))
 	$display = $_GET['display'];
 
-$scorelist = fopen("scorelist", "r") or exit("Score list not found");
-
-$index = -1;
-
-while (($pieces = fgetcsv($scorelist)) !== false)
-{
-	$curgame = new subgame($pieces);
-	if ($curgame->scorename == $game)
-		$index = count($games);
-	$games[] = $curgame;
-}
-
-fclose($scorelist);
-
-if ($index < 0)
-{
-	$index = count($games) - 1;
-	$game = $games[$index]->scorename;
-}
-
-$curgame = $games[$index];
-
-$items = count($curgame->columns);
-$halfwidth = 120 + 50 * $items;
-$key = $curgame->key;
-
 $setkey = -1;
 if (isset($_GET['sort']))
 {
 	$setkey = $_GET['sort'];
-	$key = $setkey;
+	$sort = $setkey;
 }
 
 if ($setkey >= 0)
-	$sortlink = '&sort=' . $key;
+	$sortlink = '&sort=' . $sort;
 else
 	$sortlink = '';
+
+$stmt = $mysqli->prepare("SELECT id, display_name, col1_name, col2_name, col3_name, col4_name, col5_name FROM scorelists WHERE short_name=?");
+$stmt->bind_param('s', $game);
+$stmt->execute();
+$stmt->bind_result($index, $display_name, $col1, $col2, $col3, $col4, $col5);
+if (!($stmt->fetch()))
+{
+	$stmt = $mysqli->prepare("SELECT id, short_name, display_name, col1_name, col2_name, col3_name, col4_name, col5_name FROM scorelists JOIN (SELECT max(id) AS max_id FROM scorelists) max ON id = max_id");
+	$stmt->execute();
+	$stmt->bind_result($index, $game, $display_name, $col1, $col2, $col3, $col4, $col5);
+	$stmt->fetch();
+}
+$stmt->close();
+
+$cols = array(1 => $col1, $col2, $col3, $col4, $col5);
+$cols = array_filter($cols);
+$items = count($cols);
+$halfwidth = 120 + 50 * $items;
+
 ?>
 
 <!DOCTYPE html>
 <html>
 	<head>
 		<title>Highscores</title>
-		<style>
-		body
-		{
-			text-align:center;
-		}
-		table
-		{
-			border-collapse:collapse;
-		}
-		table.center
-		{
-			margin-left:auto;
-			margin-right:auto;
-		}
-		th
-		{
-			text-align:center;
-		}
-		th, td
-		{
-			padding:3px;
-		}
-		table, th, td
-		{
-			border:1px solid black;
-		}
-		h1
-		{
-			text-align:center
-		}
-		p.center
-		{
-			text-align:center
-		}
-		td.right
-		{
-			text-align:right
-		}
-		td.left
-		{
-			text-align:left
-		}
-		</style>
+		<link rel="stylesheet" href="include/scores.css">
 	</head>
 	<body>
-		<h1><?php echo $curgame->display; ?></h1>
+		<h1><?php echo $display_name?></h1>
 		<p class="center">Display:
 			<a href="scores.php?game=<?php echo $game; ?>&display=all<?php echo $sortlink; ?>">All</a>, 
 			<a href="scores.php?game=<?php echo $game; ?>&display=topten<?php echo $sortlink; ?>">Top 10</a>, 
 			<a href="scores.php?game=<?php echo $game; ?>&display=each<?php echo $sortlink; ?>">By name</a>
 		</p>
+<?php
+	$stmt = $mysqli->prepare("SELECT short_name, display_name FROM scorelists WHERE id = ?");
+	$stmt->bind_param('i', $checkindex);
+?>
 		<table class="center" style="border:0px">
 			<tr>
 				<td class="left" style="border:0px; width:<?php echo $halfwidth; ?>px">
-				<?php if ($index > 0) { ?>
-					<a href="scores.php?game=<?php echo $games[$index - 1]->scorename; ?>&display=<?php echo $display; ?>"><?php echo $games[$index - 1]->display; ?></a>
-				<?php } else { ?>
-					&nbsp;
-				<?php } ?>
+<?php
+	$checkindex = $index - 1;
+	$stmt->execute();
+	$stmt->bind_result($other_short_name, $other_display_name);
+	if ($stmt->fetch())
+		echo "<a href=\"scores.php?game=$other_short_name&display=$display\">$other_display_name</a>";
+	else
+		echo "&nbsp;";
+?>
 				</td>
 				<td class="right" style="border:0px; width:<?php echo $halfwidth; ?>px">
-				<?php if ($index < count($games) - 1) { ?>
-					<a href="scores.php?game=<?php echo $games[$index + 1]->scorename; ?>&display=<?php echo $display; ?>"><?php echo $games[$index + 1]->display; ?></a>
-				<?php } else { ?>
-					&nbsp;
-				<?php } ?>
+<?php
+	$checkindex = $index + 1;
+	$stmt->execute();
+	$stmt->bind_result($other_short_name, $other_display_name);
+	if ($stmt->fetch())
+		echo "<a href=\"scores.php?game=$other_short_name&display=$display\">$other_display_name</a>";
+	else
+		echo "&nbsp;";
+	$stmt->close();
+?>
 				</td>
 			</tr>
 		</table>
@@ -171,86 +99,40 @@ else
 			<tr>
 				<th style="width:40px">&nbsp;</th>
 				<th style="width:200px">Name</th>
-			<?php for ($i = 0; $i < $items; $i++) { ?>
-				<th style="width:100px"><a href="Scores.php?game=<?php echo $game; ?>&display=<?php echo $display; ?>&sort=<?php echo $i; ?>"><?php echo $curgame->columns[$i]; ?></a></th>
-			<?php } ?>
+<?php
+	foreach ($cols as $key => $value)
+		echo "<th style=\"width:100px\"><a href=\"scores.php?game=$game&display=$display&sort=$key\">$value</a></th>";
+?>
 			</tr>
 
 <?php
-if ($file = fopen("scores/" . $game . "-scores", "r"))
-{
-	while (($pieces = fgetcsv($file)) !== false)
-	{
-		$cs = new entry($pieces);
-		$scores[] = $cs;
-	}
+if ($display == 'all')
+	$stmt = $mysqli->prepare("SELECT name, col1, col2, col3, col4, col5 FROM scores WHERE scorelist_id = ? ORDER BY col$sort DESC");
+else if ($display == 'topten')
+	$stmt = $mysqli->prepare("SELECT name, col1, col2, col3, col4, col5 FROM scores WHERE scorelist_id = ? ORDER BY col$sort DESC LIMIT 10");
+else
+	$stmt = $mysqli->prepare("SELECT name, max(col1), max(col2), max(col3), max(col4), max(col5) FROM scores WHERE scorelist_id = ? GROUP BY name ORDER BY max(col$sort) DESC");
 
-	fclose($file);
-}
-
-usort($scores, "cmp");
+$stmt->bind_param('i', $index);
+$stmt->execute();
+$stmt->bind_result($name, $col1, $col2, $col3, $col4, $col5);
 
 $i = 1;
-$highscore = array();
-
-foreach ($scores as $score)
+while ($stmt->fetch())
 {
-	if ($display == 'all' || ($display == 'topten' && $i <= 10))
-	{
+	$score_cols = array(1 => $col1, $col2, $col3, $col4, $col5);
 ?>
 			<tr>
-				<td class="right"><?php echo $i; ?></td>
-				<td class="left"><?php echo $score->name; ?></td>
-			<?php foreach ($score->scores as $item) { ?>
-				<td class="left"><?php echo $item; ?></td>
-			<?php } ?>
-			</tr>
-<?php
-		$i = $i + 1;
-	}
-}
-?>
-
-<?php
-
-if ($display == 'each')
-{
-	foreach ($scores as $score)
-	{
-		$name = $score->name;
-		if (!isset($highscore[$name]))
-		{
-			$highscore[$name] = new entry($name);
-			foreach ($score->scores as $item)
-				$highscore[$name]->scores[] = $item;
-		}
-		else
-		{
-			for ($i = 0; $i < $items; $i++)
-			{
-				if ($highscore[$name]->scores[$i] < $score->scores[$i])
-					$highscore[$name]->scores[$i] = $score->scores[$i];
-			}
-		}
-	}
-	uasort($highscore, "cmp");
-	$j = 1;
-	foreach ($highscore as $name => $score)
-	{
-?>
-			<tr>
-				<td class="right"><?php echo $j; ?></td>
+				<td class="right"><?php echo $i++; ?></td>
 				<td class="left"><?php echo $name; ?></td>
-			<?php foreach ($score->scores as $item) { ?>
-				<td class="left"><?php echo $item; ?></td>
+			<?php foreach ($cols as $key => $value) { ?>
+				<td class="left"><?php echo $score_cols[$key]; ?></td>
 			<?php } ?>
 			</tr>
 <?php
-		$j = $j + 1;
-	}
 }
+$stmt->close();
 ?>
-
 		</table>
 		<p class="center"><a href="index.html">Back to main index</a></p>
 	</body>
