@@ -27,7 +27,7 @@ $game = "";
 if (isset($_GET['game']))
 	$game = $_GET['game'];
 
-$gamelist = fopen("gamelist", "r") or exit("Game list not found");
+$gamelist = fopen("../include/gamelist", "r") or exit("Game list not found");
 
 $index = -1;
 
@@ -141,9 +141,9 @@ if ($commentfile = fopen("comments/" . $curgame->name . "-comments", "r"))
 		<!--[if lt IE 9]>
 			<script type="text/javascript">alert("Your browser does not support the canvas tag.");</script>
 		<![endif]-->
-		<script src="processing.js" type="text/javascript"></script>
-		<script src="start.js" type="text/javascript"></script>
-		<script src="logging.js" type="text/javascript"></script>
+		<script src="include/processing.js" type="text/javascript"></script>
+		<script src="include/start.js" type="text/javascript"></script>
+		<script src="include/logging.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			function submitted()
 			{
@@ -174,7 +174,7 @@ if ($commentfile = fopen("comments/" . $curgame->name . "-comments", "r"))
 		<div id="content">
 			<h1><?php echo $curgame->display; ?></h1>
 			<div style="text-align:center;">
-				<canvas id="<?php echo $curgame->sketchname; ?>" data-processing-sources="<?php echo $curgame->sketchname; ?>.pde" width="730" height="550">
+				<canvas id="<?php echo $curgame->sketchname; ?>" data-processing-sources="pdes/<?php echo $curgame->sketchname; ?>.pde" width="730" height="550">
 					<p>Your browser does not support the canvas tag.</p>
 					<!-- Note: you can put any alternative content here. -->
 				</canvas>
