@@ -87,7 +87,7 @@ if ($commentfile = fopen("comments/" . $curgame->name . "-comments", "r"))
 		</div>
 		<div id="commentarea">
 <?php
-$stmt = $mysqli->prepare("SELECT name, time, comment FROM comments WHERE game_id = ?");
+$stmt = $mysqli->prepare("SELECT name, time, comment FROM comments WHERE game_id = ? ORDER BY id");
 $stmt->bind_param('i', $index);
 $stmt->execute();
 $stmt->bind_result($name, $time, $comment);
