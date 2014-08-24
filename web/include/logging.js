@@ -38,11 +38,11 @@ function log_score(scorelist, user)
 	xhr.send(parameters);
 }
 
-function writecomment(filename, user, comment)
+function log_comment(index, user, comment)
 {
 	var xhr = createXHR();
-	var parameters = "file=" + filename + "&name=" + user + "&comment=" + comment;
-	xhr.open("POST", "comment.php", true);
+	var parameters = "index=" + index + "&name=" + user + "&comment=" + comment;
+	xhr.open("POST", "include/comment.php", true);
 	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
 	xhr.send(parameters);
 }

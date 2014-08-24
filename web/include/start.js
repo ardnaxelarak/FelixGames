@@ -296,7 +296,7 @@ Start.prototype.loadName = function()
 		if (options.length < 1)
 			this.pname = "";
 		else
-			this.pname = options[0].split("_").join(" ");
+			this.pname = options[0];
 	}
 	catch (e)
 	{

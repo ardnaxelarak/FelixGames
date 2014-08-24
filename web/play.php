@@ -1,17 +1,6 @@
 <?php
 include_once '../include/db_connect.php';
 
-class comment
-{
-	public $name, $time, $text;
-	public function __construct($pieces)
-	{
-		$this->name = ucwords(trim($pieces[0], " _"));
-		$this->text = $pieces[1];
-		$this->time = $pieces[2];
-	}
-}
-
 $game = "";
 
 if (isset($_GET['game']))
@@ -70,7 +59,7 @@ if ($commentfile = fopen("comments/" . $curgame->name . "-comments", "r"))
 					alert("What is the point of leaving a blank comment?");
 					return;
 				}
-				writecomment("comments/<?php echo $game?>-comments", nameValue, commentValue);
+				log_comment(<?php echo $index?>, nameValue, commentValue);
 				var ch1 = document.getElementById('commenttext');
 				alert("Thank you! Your comment has been recorded. Please refresh the page to see it.");
 				document.getElementById('comment').value = "";
@@ -97,17 +86,24 @@ if ($commentfile = fopen("comments/" . $curgame->name . "-comments", "r"))
 			<p><a href="." title="Index">Return to main index</a>
 		</div>
 		<div id="commentarea">
-<?php foreach ($comments as $comment) {?>
+<?php
+$stmt = $mysqli->prepare("SELECT name, time, comment FROM comments WHERE game_id = ?");
+$stmt->bind_param('i', $index);
+$stmt->execute();
+$stmt->bind_result($name, $time, $comment);
+while ($stmt->fetch())
+{
+	$time = date("g:i A \o\\n j F Y", strtotime($time)); ?>
 			<div class="comment">
-				<h1 class="commentname"><?php echo $comment->name; ?></h1>
-				<p class="commenttime"><?php echo $comment->time; ?></p>
-				<h3 class="commenttext"><?php echo $comment->text; ?></h3>
+				<h1 class="commentname"><?php echo $name?></h1>
+				<p class="commenttime"><?php echo $time?></p>
+				<h3 class="commenttext"><?php echo $comment?></h3>
 			</div>
 <?php } ?>
 			<h1 id="commenttext">Leave a comment!</h1>
 			<form id="commentform" action="javascript:submitted()">
 				Comment:<br>
-				<textarea rows="10" cols="50" id="comment"></textarea><br>
+				<textarea rows="5" cols="50" id="comment"></textarea><br>
 				<input namhe="Submit" type="submit" value="Submit"/>
 			</form>
 		</div>
